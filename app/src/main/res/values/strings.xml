@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">EShop</string>
+    <string name="app_version">v1.0</string>
+    <string name="app_copyright">@ JIAT App</string>
+    <string name="side_nav_home_title">Home</string>
+    <string name="side_nav_profile_title">Profile</string>
+    <string name="side_nav_orders_title">Orders</string>
+    <string name="side_nav_wishlist_title">Wishlist</string>
+    <string name="side_nav_cart_title">Cart</string>
+    <string name="side_nav_message_title">Message</string>
+    <string name="side_nav_setting_title">Settings</string>
+    <string name="side_nav_login_title">Login</string>
+    <string name="side_nav_logout_title">Logout</string>
+</resources>
