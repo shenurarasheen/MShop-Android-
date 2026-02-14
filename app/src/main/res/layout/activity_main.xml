@@ -11,8 +11,52 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:menu="@menu/side_nav_menu"
+        app:itemIconTint="@color/nav_icon_colors"
+        app:headerLayout="@layout/side_nav_header"
         android:layout_gravity="start"
+        app:itemIconSize="25dp"
         />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textSize="14sp"
+                android:drawableStart="@drawable/search_24"
+                android:hint="@string/search_bar_hint"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:drawablePadding="12dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/custom_input_search"
+                />
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+        <androidx.fragment.app.FragmentContainerView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:menu="@menu/bottom_nav_menu"
+            app:itemIconTint="@color/nav_icon_colors"
+            app:labelVisibilityMode="labeled"
+            app:itemIconSize="25dp"/>
+
+    </LinearLayout>
 
 
 </androidx.drawerlayout.widget.DrawerLayout>
