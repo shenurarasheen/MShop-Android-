@@ -7,29 +7,22 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:menu="@menu/side_nav_menu"
-        app:itemIconTint="@color/nav_icon_colors"
-        app:headerLayout="@layout/side_nav_header"
-        android:layout_gravity="start"
-        app:itemIconSize="25dp"
-        />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:navigationIcon="@drawable/menu_24px">
 
             <EditText
+                android:id="@+id/text_input_search"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="6dp"
                 android:layout_marginEnd="16dp"
                 android:textSize="14sp"
                 android:drawableStart="@drawable/search_24"
@@ -44,11 +37,13 @@
         </com.google.android.material.appbar.MaterialToolbar>
 
         <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:menu="@menu/bottom_nav_menu"
@@ -57,6 +52,17 @@
             app:itemIconSize="25dp"/>
 
     </LinearLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/side_navigation_view"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        app:menu="@menu/side_nav_menu"
+        app:itemIconTint="@color/nav_icon_colors"
+        app:headerLayout="@layout/side_nav_header"
+        android:layout_gravity="start"
+        app:itemIconSize="25dp"
+        />
 
 
 </androidx.drawerlayout.widget.DrawerLayout>
