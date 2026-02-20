@@ -2,6 +2,7 @@ package lk.jiat.eshop.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,10 +18,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import lk.jiat.eshop.R;
 import lk.jiat.eshop.databinding.ActivityMainBinding;
@@ -33,6 +40,7 @@ import lk.jiat.eshop.fragment.OrderFragment;
 import lk.jiat.eshop.fragment.ProfileFragment;
 import lk.jiat.eshop.fragment.SettingFragment;
 import lk.jiat.eshop.fragment.WishlistFragment;
+import lk.jiat.eshop.model.User;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         NavigationBarView.OnItemSelectedListener {
@@ -44,6 +52,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     MaterialToolbar toolbar;
     NavigationView navigationView;
     BottomNavigationView bottomNavigationView;
+
+    private FirebaseAuth firebaseAuth;
+    private FirebaseFirestore firebaseFirestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +98,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             loadFragment(new HomeFragment());
         }
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseFirestore = FirebaseFirestore.getInstance();
+
+        //check and load user details
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser != null) {
+            firebaseFirestore.collection("users").document(currentUser.getUid()).get()
+                    .addOnSuccessListener(ds -> {
+
+                        if (ds.exists()) {
+                            User user = ds.toObject(User.class);
+                            sideNavHeaderBinding.headerUserName.setText(user.getFirstName() + " " + user.getLastName());
+                            sideNavHeaderBinding.headerUserEmail.setText(user.getEmail());
+
+                            Glide.with(MainActivity.this)
+                                    .load(user.getProfilePicUrl())
+                                    .circleCrop()
+                                    .into(sideNavHeaderBinding.headerProfilePic);
+                        } else {
+                            Log.e("Firestore", "User document does not exist");
+                        }
+
+                    })
+                    .addOnFailureListener(e -> {;
+                        Log.e("Firestore", "Firestore error: " + e.getMessage());
+                    });
+
+            //Hide side nav login menu item
+            navigationView.getMenu().findItem(R.id.side_nav_login).setVisible(false);
+
+            //Show side nav menu items
+            navigationView.getMenu().findItem(R.id.side_nav_profile).setVisible(true);
+            navigationView.getMenu().findItem(R.id.side_nav_orders).setVisible(true);
+            navigationView.getMenu().findItem(R.id.side_nav_wishlist).setVisible(true);
+            navigationView.getMenu().findItem(R.id.side_nav_message).setVisible(true);
+            navigationView.getMenu().findItem(R.id.side_nav_logout).setVisible(true);
+
+        }
+
     }
 
     @Override
@@ -111,6 +161,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             bottomNavigationView.getMenu().findItem(R.id.bottom_nav_home).setChecked(true);
 
         } else if (itemId == R.id.side_nav_profile || itemId == R.id.bottom_nav_profile) {
+            if (firebaseAuth.getCurrentUser() == null) {
+                Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+                startActivity(intent);
+                finish();
+            }
             loadFragment(new ProfileFragment());
             navigationView.getMenu().findItem(R.id.side_nav_profile).setChecked(true);
             bottomNavigationView.getMenu().findItem(R.id.bottom_nav_profile).setChecked(true);
@@ -129,6 +184,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.getMenu().findItem(R.id.side_nav_wishlist).setChecked(true);
 
         } else if (itemId == R.id.side_nav_cart || itemId == R.id.bottom_nav_cart) {
+            if (firebaseAuth.getCurrentUser() == null) {
+                Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+                startActivity(intent);
+                finish();
+            }
             loadFragment(new CartFragment());
             navigationView.getMenu().findItem(R.id.side_nav_cart).setChecked(true);
             bottomNavigationView.getMenu().findItem(R.id.bottom_nav_cart).setChecked(true);
@@ -146,7 +206,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
 
         } else if (itemId == R.id.side_nav_logout) {
-            navigationView.getMenu().findItem(R.id.side_nav_logout).setChecked(true);
+            firebaseAuth.signOut();
+            loadFragment(new HomeFragment());
+            navigationView.getMenu().clear();
+            navigationView.inflateMenu(R.menu.side_nav_menu);
+
+            navigationView.removeHeaderView(sideNavHeaderBinding.getRoot());
+            navigationView.inflateHeaderView(R.layout.side_nav_header);
         }
 
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
