@@ -58,13 +58,14 @@
             android:id="@+id/side_nav_login"
             android:icon="@drawable/login_24px"
             android:title="@string/side_nav_login_title"
+            android:visible="true"
             android:checkable="true"/>
 
         <item
             android:id="@+id/side_nav_logout"
             android:icon="@drawable/logout_24px"
             android:title="@string/side_nav_logout_title"
-            android:visible="false"
+            android:visible="true"
             android:checkable="true"/>
     </group>
 

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/header_profile_pic"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="bottom"
@@ -14,7 +14,7 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/header_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Shenura Rasheen"
@@ -23,7 +23,7 @@
         android:layout_marginStart="125dp"/>
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/header_user_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="shenurarasheen@gmail.com"

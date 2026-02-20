@@ -1,7 +1,10 @@
 package lk.jiat.eshop.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -20,6 +23,8 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
 import lk.jiat.eshop.R;
+import lk.jiat.eshop.databinding.ActivityMainBinding;
+import lk.jiat.eshop.databinding.SideNavHeaderBinding;
 import lk.jiat.eshop.fragment.CartFragment;
 import lk.jiat.eshop.fragment.CategoryFragment;
 import lk.jiat.eshop.fragment.HomeFragment;
@@ -32,6 +37,9 @@ import lk.jiat.eshop.fragment.WishlistFragment;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         NavigationBarView.OnItemSelectedListener {
 
+    private ActivityMainBinding binding;
+    private SideNavHeaderBinding sideNavHeaderBinding;
+
     DrawerLayout drawerLayout;
     MaterialToolbar toolbar;
     NavigationView navigationView;
@@ -40,12 +48,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        drawerLayout = findViewById(R.id.drawerLayout);
-        toolbar = findViewById(R.id.toolBar);
-        navigationView = findViewById(R.id.side_navigation_view);
-        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        View headerView = binding.sideNavigationView.getHeaderView(0);
+        sideNavHeaderBinding = SideNavHeaderBinding.bind(headerView);
+
+        drawerLayout = binding.drawerLayout;
+        toolbar = binding.toolBar;
+        navigationView = binding.sideNavigationView;
+        bottomNavigationView = binding.bottomNavigationView;
 
         setSupportActionBar(toolbar);
 
@@ -81,7 +94,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         int itemId = item.getItemId();
 
-        navigationView.setCheckedItem(-1);
+        Menu navMenu = navigationView.getMenu();
+        Menu bottomNavMenu = bottomNavigationView.getMenu();
+
+        for (int i = 0; i < navMenu.size(); i++) {
+            navMenu.getItem(i).setChecked(false);
+        }
+
+        for (int i = 0; i < bottomNavMenu.size(); i++) {
+            bottomNavMenu.getItem(i).setChecked(false);
+        }
 
         if (itemId == R.id.side_nav_home || itemId == R.id.bottom_nav_home) {
             loadFragment(new HomeFragment());
@@ -120,7 +142,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.getMenu().findItem(R.id.side_nav_settings).setChecked(true);
 
         } else if (itemId == R.id.side_nav_login) {
-            navigationView.getMenu().findItem(R.id.side_nav_login).setChecked(true);
+            Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+            startActivity(intent);
 
         } else if (itemId == R.id.side_nav_logout) {
             navigationView.getMenu().findItem(R.id.side_nav_logout).setChecked(true);
