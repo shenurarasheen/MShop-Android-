@@ -24,12 +24,11 @@
     <TextView
         android:id="@+id/listing_item_name"
         android:layout_width="wrap_content"
-        android:layout_height="28dp"
+        android:layout_height="wrap_content"
         android:text="Item"
         android:layout_marginTop="10dp"
         android:textAlignment="center"
-        android:textSize="12sp"
-        android:textStyle="bold"/>
+        android:textSize="12sp" />
     <TextView
         android:id="@+id/listing_item_price"
         android:layout_width="wrap_content"

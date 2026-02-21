@@ -2,14 +2,17 @@ package lk.jiat.eshop.fragment;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -51,8 +54,10 @@ public class ListingFragment extends Fragment {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        //ProductSamples.saveProducts(db);
+
         db.collection("products")
-                .whereEqualTo("catogoryId", categoryId)
+                .whereEqualTo("categoryId", categoryId)
                 .orderBy("title", Query.Direction.ASCENDING)
                 .get()
                 .addOnSuccessListener(ds -> {
@@ -60,11 +65,30 @@ public class ListingFragment extends Fragment {
                         List<Product> products = ds.toObjects(Product.class);
 
                         adapter = new ListingAdapter(products, product -> {
+                            Bundle bundle = new Bundle();
+                            bundle.putString("productId", product.getProductId());
+
+                            SingleProductFragment fragment = new SingleProductFragment();
+                            fragment.setArguments(bundle);
+
+                            getParentFragmentManager().beginTransaction()
+                                    .replace(R.id.fragment_container, fragment)
+                                    .commit();
 
                         });
 
                         binding.recyclerViewListing.setAdapter(adapter);
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error : " + e.getMessage());
                 });
+
+        getActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                requireActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
     }
 }
