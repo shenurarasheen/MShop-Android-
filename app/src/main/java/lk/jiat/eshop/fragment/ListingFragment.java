@@ -71,8 +71,10 @@ public class ListingFragment extends Fragment {
                             SingleProductFragment fragment = new SingleProductFragment();
                             fragment.setArguments(bundle);
 
+                            // Add the transaction to the back stack so Back returns to the listing
                             getParentFragmentManager().beginTransaction()
                                     .replace(R.id.fragment_container, fragment)
+                                    .addToBackStack(null)
                                     .commit();
 
                         });
@@ -84,11 +86,11 @@ public class ListingFragment extends Fragment {
                     Log.e("Firestore", "Error : " + e.getMessage());
                 });
 
-        getActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                requireActivity().getSupportFragmentManager().popBackStack();
-            }
-        });
+//        getActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+//            @Override
+//            public void handleOnBackPressed() {
+//                requireActivity().getSupportFragmentManager().popBackStack();
+//            }
+//        });
     }
 }
