@@ -8,7 +8,8 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/product_details_bottom_bar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -75,6 +76,12 @@
                 android:padding="16dp">
 
                 <!--     Need to complete     -->
+                <LinearLayout
+                    android:id="@+id/single_product_attribute_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -86,11 +93,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="100dp"
+                    android:layout_marginBottom="10dp"
                     android:orientation="horizontal"
                     android:layout_gravity="center_vertical">
 
                     <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/decrement_qty_btn"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:text="-"
@@ -104,6 +112,7 @@
                         android:textAlignment="center"/>
 
                     <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/increment_qty_btn"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:text="+"
@@ -127,11 +136,18 @@
 
             </LinearLayout>
 
+            <include
+                android:id="@+id/product_details_top_sell_section"
+                layout="@layout/item_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
+        android:id="@+id/product_details_bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
