@@ -1,5 +1,6 @@
 package lk.jiat.eshop.fragment;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,29 +12,35 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import lk.jiat.eshop.R;
+import lk.jiat.eshop.activity.SignInActivity;
 import lk.jiat.eshop.adapter.ProductSliderAdapter;
 import lk.jiat.eshop.adapter.TopSellingSectionAdapter;
 import lk.jiat.eshop.databinding.FragmentSingleProductBinding;
+import lk.jiat.eshop.model.CartItem;
 import lk.jiat.eshop.model.Product;
 
 public class SingleProductFragment extends Fragment {
@@ -130,7 +137,30 @@ public class SingleProductFragment extends Fragment {
         loadTopSellProducts();
 
         binding.singleProductAddToCartBtn.setOnClickListener(v -> {
-            getFinalSelections();
+
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            if (auth.getCurrentUser() == null) {
+                Intent intent = new Intent(getActivity(), SignInActivity.class);
+                startActivity(intent);
+            } else {
+
+                List<CartItem.Attribute> attributes = getFinalSelections();
+
+                CartItem cartItem = new CartItem(productId, qty, attributes);
+
+                String uid = auth.getCurrentUser().getUid();
+
+                db.collection("users").document(uid).collection("cart")
+                        .document()
+                        .set(cartItem)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Toast.makeText(getContext(), "Item added to cart", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+
         });
     }
 
@@ -217,9 +247,9 @@ public class SingleProductFragment extends Fragment {
 
     }
 
-    private void getFinalSelections() {
+    private List<CartItem.Attribute> getFinalSelections() {
 
-        StringBuilder result = new StringBuilder("Selected: \n");
+        List<CartItem.Attribute> attributes = new ArrayList<>();
 
         for(Map.Entry<String, ChipGroup> entry: attributeGroups.entrySet()) {
             String attributeName = entry.getKey();
@@ -230,10 +260,11 @@ public class SingleProductFragment extends Fragment {
                 Chip chip = getView().findViewById(checkedChipId);
                 String value = chip.getTag().toString();
 
-                result.append(attributeName).append(": ").append(value);
-
+                attributes.add(new CartItem.Attribute(attributeName, value));
             }
         }
+
+        return attributes;
     }
 
     @Override
