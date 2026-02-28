@@ -51,4 +51,7 @@ dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
     implementation(libs.dotsindicator)
+
+    implementation libs.payhere.android.sdk
+    implementation libs.gson
 }
