@@ -2,6 +2,7 @@ package lk.jiat.eshop.model;
 
 import java.util.List;
 
+import lk.payhere.androidsdk.model.StatusResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class Order {
     private List<OrderItem> orderItems;
     private Address shippingAddress;
     private Address billingAddress;
+    private StatusResponse statusResponse;
 
     @Data
     @Builder
