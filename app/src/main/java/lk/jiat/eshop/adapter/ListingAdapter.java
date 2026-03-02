@@ -1,5 +1,6 @@
 package lk.jiat.eshop.adapter;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.List;
 
@@ -24,10 +26,12 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
     private List<Product> products;
 
     private OnProductClickListener listener;
+    private FirebaseStorage storage;
 
     public ListingAdapter(List<Product> products, OnProductClickListener listener) {
         this.products = products;
         this.listener = listener;
+        storage = FirebaseStorage.getInstance();
     }
 
 
@@ -43,22 +47,34 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Product product = products.get(position);
         holder.productTitle.setText(product.getTitle());
-        holder.productPrice.setText("LKR "+ product.getPrice());
-        Glide.with(holder.itemView.getContext())
-                .load(product.getImages().get(0))
-                .centerCrop()
-                .into(holder.productImage);
+        holder.productPrice.setText("LKR " + product.getPrice());
 
 
-            holder.productImage.setOnClickListener(v -> {
+        storage.getReference("/product-images/" + product.getProductId())
+                .listAll()
+                .addOnSuccessListener(listResult -> {
 
-                Animation animation = AnimationUtils.loadAnimation(v.getContext(), R.anim.click_animation);
-                v.startAnimation(animation);
+                    if (listResult != null && !listResult.getItems().isEmpty()) {
+                        listResult.getItems().get(0).getDownloadUrl()
+                                .addOnSuccessListener(uri -> {
+                                    Glide.with(holder.itemView.getContext())
+                                            .load(uri)
+                                            .centerCrop()
+                                            .into(holder.productImage);
+                                });
+                    }
+                });
 
-                if (listener != null) {
-                    listener.onProductClick(product);
-                }
-            });
+
+        holder.productImage.setOnClickListener(v -> {
+
+            Animation animation = AnimationUtils.loadAnimation(v.getContext(), R.anim.click_animation);
+            v.startAnimation(animation);
+
+            if (listener != null) {
+                listener.onProductClick(product);
+            }
+        });
 
     }
 
@@ -70,6 +86,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
         TextView productTitle, productPrice;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             productImage = itemView.findViewById(R.id.listing_item_image);
