@@ -1,6 +1,7 @@
 package lk.jiat.eshop.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -9,6 +10,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,10 +27,15 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.UUID;
 
 import lk.jiat.eshop.R;
 import lk.jiat.eshop.databinding.ActivityMainBinding;
@@ -80,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        getOnBackPressedDispatcher().addCallback(this,new OnBackPressedCallback(true) {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -112,16 +120,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             sideNavHeaderBinding.headerUserName.setText(user.getFirstName() + " " + user.getLastName());
                             sideNavHeaderBinding.headerUserEmail.setText(user.getEmail());
 
-                            Glide.with(MainActivity.this)
-                                    .load(user.getProfilePicUrl())
-                                    .circleCrop()
-                                    .into(sideNavHeaderBinding.headerProfilePic);
+                            //loading image on start of the Main Activity
+                            FirebaseStorage storage = FirebaseStorage.getInstance();
+                            storage.getReference("profile-images/" + user.getProfilePicUrl()).getDownloadUrl()
+                                            .addOnSuccessListener(uri -> {
+                                                Glide.with(MainActivity.this)
+                                                        .load(uri)
+                                                        .circleCrop()
+                                                        .into(sideNavHeaderBinding.headerProfilePic);
+                                            });
+
+//                            Glide.with(MainActivity.this)
+//                                    .load(user.getProfilePicUrl())
+//                                    .circleCrop()
+//                                    .into(sideNavHeaderBinding.headerProfilePic);
                         } else {
                             Log.e("Firestore", "User document does not exist");
                         }
 
                     })
-                    .addOnFailureListener(e -> {;
+                    .addOnFailureListener(e -> {
+                        ;
                         Log.e("Firestore", "Firestore error: " + e.getMessage());
                     });
 
@@ -135,9 +154,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.getMenu().findItem(R.id.side_nav_message).setVisible(true);
             navigationView.getMenu().findItem(R.id.side_nav_logout).setVisible(true);
 
+
+            //Change or set profile image
+            sideNavHeaderBinding.headerProfilePic.setOnClickListener(v -> {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+
+                activityResultLauncher.launch(intent);
+            });
+
         }
 
     }
+
+
+    //upload profile image to firebase storage
+    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == MainActivity.RESULT_OK) {
+                    Uri uri = result.getData().getData();
+
+                    if (uri != null) {
+
+                        Log.i("ImageURI", uri.getPath());
+
+                        Glide.with(MainActivity.this)
+                                .load(uri)
+                                .centerCrop()
+                                .into(sideNavHeaderBinding.headerProfilePic);
+
+                        String imageId = UUID.randomUUID().toString();
+
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                        StorageReference imageReference = storage.getReference("profile-images").child(imageId);
+                        imageReference.putFile(uri)
+                                .addOnSuccessListener(taskSnapshot -> {
+
+                                    firebaseFirestore.collection("users").document(firebaseAuth.getUid())
+                                            .update("profilePicUrl", imageId)
+                                            .addOnSuccessListener(aVoid -> {
+                                                Toast.makeText(MainActivity.this, "Profile image changed", Toast.LENGTH_SHORT).show();
+                                            });
+
+                                });
+                    }
+
+                }
+            }
+    );
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -219,13 +285,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             drawerLayout.closeDrawer(GravityCompat.START);
         }
 
-         return true;
-     }
+        return true;
+    }
 
-     private void loadFragment(Fragment fragment) {
-         FragmentManager fragmentManager = getSupportFragmentManager();
-         FragmentTransaction transaction = fragmentManager.beginTransaction();
-         transaction.replace(R.id.fragment_container, fragment);
-         transaction.commit();
-     }
- }
+    private void loadFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.commit();
+    }
+}
