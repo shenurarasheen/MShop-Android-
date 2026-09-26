@@ -229,7 +229,7 @@ app/
 
 ## 👤 Author
 
-**Shenura**
+**Shenura Rasheen**
 Software Developer | BEng Student
 [LinkedIn](https://linkedin.com/in/shenurarasheen/) • [GitHub](#)
 
@@ -237,4 +237,5 @@ Software Developer | BEng Student
 
 ## 📄 License
 
-This project is for academic/portfolio purposes. Add your preferred license here (e.g. MIT, Apache 2.0) if you intend to open-source it.
+MIT License
+Copyright (c) 2026 Shenura Rasheen
