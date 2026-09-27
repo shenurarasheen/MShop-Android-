@@ -173,19 +173,25 @@ Or simply click **Sync Project with Gradle Files** and then **Build → Make Pro
 
 ## 📸 Screenshots
 
-> Add screenshots of the app here to give users a visual overview.
-
 | Splash Screen | Home Screen | Product Details |
 |---|---|---|
-| _<!-- screenshot -->_ | _<!-- screenshot -->_ | _<!-- screenshot -->_ |
+| ![splash screen](/assets/splash.jpeg) | ![home screen](/assets/home.jpeg) | ![single_product screen](/assets/single_product.jpeg) |
 
 | Cart (Shake-to-Delete) | Checkout | Order Tracking |
 |---|---|---|
-| _<!-- screenshot -->_ | _<!-- screenshot -->_ | _<!-- screenshot -->_ |
+| ![cart screen](/assets/user_cart.jpeg) | ![payment screen](/assets/payment_details.jpeg) | ![order screen](/assets/orders.jpeg) |
 
-| Seller Location Map | Profile & Location | Add Product |
+| Seller Location Map | User Profile | Add Product |
 |---|---|---|
-| _<!-- screenshot -->_ | _<!-- screenshot -->_ | _<!-- screenshot -->_ |
+| ![seller_location screen](/assets/seller_location.jpeg) | ![user_location screen](/assets/profile.jpeg) | ![add_product screen](/assets/add_product.jpeg) |
+
+| Seller Details | Selling Products | Seller Location |
+|---|---|---|
+| ![seller_details screen](/assets/seller_details.jpeg) | ![selling_products screen](/assets/selling_products.jpeg) | ![seller_location screen](/assets/seller_location.jpeg) |
+
+| Sign In | Sign Up | Categories |
+|---|---|---|
+| ![signinn screen](/assets/sign_in.jpeg) | ![signup screen](/assets/sign_up.jpeg) | ![add_product screen](/assets/all_categories.jpeg) |
 
 ---
 
